@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<link rel="stylesheet" href="html5reset-1.6.1.css">
+<link rel="stylesheet" href="style.css">
+<head>
+<meta charset="utf-8">
+<title>Chatアプリ</title>
+</head>
+<body>
+
+     
+<!-- コンテンツ表示画面 -->
+<div class="line__container">
+     
+     <div class="line__title">
+          ライン風
+     </div>
+     
+     <div id="output" class="line__contents scroll">
+       
+     
+     </div>
+<!--
+     <div>
+     <ul>
+     <li class="imgs"data-img="0"><img src="imgs/buke.png"width="100"></li>>
+     <li class="imgs"data-img="1"><img src="imgs/tuku.jpg"width="100"></li>> 
+     <li class="imgs"data-img="2"><img src="imgs/caram.png"width="100"></li>> <div>-->
+     <div>
+          名前<input type="text" id="uname">
+     </div>
+     <div>
+          <textarea id="text" cols="45" rows="5"></textarea>
+          <button id="send">送信</button>
+     </div>
+     <!--<div id="output" style="height: 300px;overflow: auto;border: 1px solid red;"></div>-->
+     
+
+     
+</div>
+
+
+
+
+
+<!--/ コンテンツ表示画面 -->
+
+
+
+<!-- JQuery -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<!-- JQuery -->
+
+
+<!--** 以下Firebase **-->
+<!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.1.2/firebase.js"></script>
+
+
+<!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyCW-czkKIvBHPX15rNZpSUjjF28OGMIsls",
+    authDomain: "unit1-33de2.firebaseapp.com",
+    projectId: "unit1-33de2",
+    storageBucket: "unit1-33de2.appspot.com",
+    messagingSenderId: "376680620000",
+    appId: "1:376680620000:web:560df7d8d35b70a71fd585"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+  const ref = firebase.database().ref();
+  //ref('/useritem/')の中にデレク鳥構造を書くとデータ保存される
+//アイコン処理
+var d=0;
+const img=["buka.png","tuku.jpg","caram.png"];
+$(".img").on("click",function(){
+     d=$(this).attr("data-img");
+});
+
+//送信イベント
+$("#send").on("click",function(){
+//分岐処理 名前に応じてキャラ変更
+
+     const youbi = ["日","月","火","水","木","金","土"];
+     const date1 = new Date();
+     const date2 =  date1.getMonth() + 1  + "月" + 
+                    date1.getDate() + "日" + 
+                    date1.getHours() + "時" + 
+                    date1.getMinutes() + "分" + 
+                    date1.getSeconds() + "秒" + 
+                    youbi[date1.getDay()] + "曜日" // 0は日曜日～6は土曜日
+     const uname=$("#uname").val();
+     const text=$("#text").val();
+     const msg={
+          uname:uname, //送信名；値
+          text:text,
+          date2:date2,
+          icon:d
+          //名前に応じて分岐処理か？アイコン変更0から２文字を飛ばして
+          //戻りで表示
+     };
+     ref.push(msg); // サーバーにプッシュ
+     //送信したら名前と内容の記述を消す
+     $("text").val("");
+     $("uname").val("");
+     
+     const messagesArea = document.getElementById('output');
+     messagesArea.scrollTop = messagesArea.scrollHeight;
+});
+//"child_added：毎回１個,","value:毎回全てのデータ取得"
+//受信イベント
+ref.on("child_added",function(data){ //引数でオブジェクトデータを受けとる
+     const v=data.val();//.valを使いdataオブジェクトの中のdata変数を取得
+     const k=data.kye; //Uniqekye:データベース参照（削除に必要らしい）
+     const h='<p>'+v.uname+'<br>'+v.text+'<br>'+v.date2+'</p>';//html文字作成
+     $("#output").append(h);//#outputに差し込む
+     
+     
+     
+
+});
+
+//enterで送信
+$("#text").on("keydown",function(e){
+     console.log(e.keyCode);
+     if(e.keyCode==13){
+     const youbi = ["日","月","火","水","木","金","土"];
+     const date1 = new Date();
+     const date2 =  date1.getMonth() + 1  + "月" + 
+                    date1.getDate() + "日" + 
+                    date1.getHours() + "時" + 
+                    date1.getMinutes() + "分" + 
+                    date1.getSeconds() + "秒" + 
+                    youbi[date1.getDay()] + "曜日" // 0は日曜日～6は土曜日
+     const uname=$("#uname").val();
+     const text=$("#text").val();
+     const msg={
+          uname:uname, //送信名；値
+          text:text,
+          date2:date2
+          
+     };
+     ref.push(msg); 
+     // サーバーにプッシュ
+     //送信したら名前と内容の記述を消す
+     $("text").val(null);
+     $("uname").val(null);
+     }
+     
+  const messagesArea = document.getElementById('output');
+  messagesArea.scrollTop = messagesArea.scrollHeight;
+
+});
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
